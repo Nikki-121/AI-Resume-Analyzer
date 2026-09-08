@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Resume Analyzer</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <h1>🤖 AI Resume Analyzer</h1>
+            <p>Analyze your resume against a job description</p>
+        </div>
+    </header>
+
+
+    <main class="container">
+
+        <!-- Upload Section -->
+        <section class="card">
+
+            <h2>📄 Upload Your Resume</h2>
+
+            <p class="description">
+                Upload your resume in PDF format to analyze your skills.
+            </p>
+
+            <div class="upload-box">
+
+                <input
+                    type="file"
+                    id="resume"
+                    accept=".pdf"
+                >
+
+                <label for="resume" class="upload-label">
+                    📁 Choose Resume PDF
+                </label>
+
+                <p id="fileName">
+                    No file selected
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Job Description -->
+        <section class="card">
+
+            <h2>💼 Job Description</h2>
+
+            <p class="description">
+                Paste the job description you want to compare your resume with.
+            </p>
+
+            <textarea
+                id="jobDescription"
+                placeholder="Paste the job description here..."
+            ></textarea>
+
+        </section>
+
+
+        <!-- Analyze Button -->
+        <section class="action-section">
+
+            <button id="analyzeBtn">
+                🚀 Analyze Resume
+            </button>
+
+        </section>
+
+
+        <!-- Loading -->
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Analyzing your resume...</p>
+        </div>
+
+
+        <!-- Error -->
+        <div id="error" class="error hidden"></div>
+
+
+        <!-- Results -->
+        <section id="results" class="results hidden">
+
+            <h2>📊 Analysis Results</h2>
+
+
+            <!-- Match Score -->
+            <div class="score-card">
+
+                <p>Resume Match Score</p>
+
+                <div id="score">
+                    0%
+                </div>
+
+                <h3 id="recommendation">
+                    -
+                </h3>
+
+            </div>
+
+
+            <!-- Skills -->
+            <div class="skills-grid">
+
+                <div class="result-card">
+
+                    <h3>✅ Matched Skills</h3>
+
+                    <div id="matchedSkills">
+                        <p>No matched skills</p>
+                    </div>
+
+                </div>
+
+
+                <div class="result-card">
+
+                    <h3>❌ Missing Skills</h3>
+
+                    <div id="missingSkills">
+                        <p>No missing skills</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Resume Skills -->
+            <div class="result-card">
+
+                <h3>🧑‍💻 Skills Found In Resume</h3>
+
+                <div id="resumeSkills">
+                    <p>No skills detected</p>
+                </div>
+
+            </div>
+
+
+            <!-- Job Skills -->
+            <div class="result-card">
+
+                <h3>💼 Skills Required By Job</h3>
+
+                <div id="jobSkills">
+                    <p>No job skills detected</p>
+                </div>
+
+            </div>
+
+
+            <!-- Suggestions -->
+            <div class="result-card">
+
+                <h3>💡 Suggestions</h3>
+
+                <ul id="suggestions">
+                </ul>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <p>
+            AI Resume Analyzer | Built with Python, Flask, HTML, CSS & JavaScript
+        </p>
+
+    </footer>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

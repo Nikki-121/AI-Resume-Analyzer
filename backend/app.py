@@ -1,13 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
+from analyzer import analyze_resume
 import os
 import PyPDF2
 
 app = Flask(__name__)
 CORS(app)
 
-# Upload configuration
 UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = {"pdf"}
 
@@ -17,24 +17,23 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
 def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+    return (
+        "." in filename
+        and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+    )
 
 
 def extract_text_from_pdf(filepath):
     text = ""
 
-    try:
-        with open(filepath, "rb") as file:
-            reader = PyPDF2.PdfReader(file)
+    with open(filepath, "rb") as file:
+        reader = PyPDF2.PdfReader(file)
 
-            for page in reader.pages:
-                page_text = page.extract_text()
+        for page in reader.pages:
+            page_text = page.extract_text()
 
-                if page_text:
-                    text += page_text + "\n"
-
-    except Exception as e:
-        raise Exception(f"PDF extraction failed: {str(e)}")
+            if page_text:
+                text += page_text + "\n"
 
     return text
 
@@ -48,7 +47,7 @@ def home():
 
 
 @app.route("/api/analyze", methods=["POST"])
-def analyze_resume():
+def analyze():
 
     if "resume" not in request.files:
         return jsonify({
@@ -59,7 +58,7 @@ def analyze_resume():
 
     if resume.filename == "":
         return jsonify({
-            "error": "No file selected"
+            "error": "No resume selected"
         }), 400
 
     if not allowed_file(resume.filename):
@@ -75,31 +74,48 @@ def analyze_resume():
         }), 400
 
     filename = secure_filename(resume.filename)
-    filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
-    resume.save(filepath)
+    filepath = os.path.join(
+        app.config["UPLOAD_FOLDER"],
+        filename
+    )
 
     try:
+        resume.save(filepath)
+
         resume_text = extract_text_from_pdf(filepath)
 
         if not resume_text.strip():
             return jsonify({
-                "error": "Could not extract text from the resume PDF"
+                "error": "Could not extract text from resume PDF"
             }), 400
+
+        result = analyze_resume(
+            resume_text,
+            job_description
+        )
 
         return jsonify({
             "status": "success",
-            "message": "Resume uploaded and analyzed successfully",
-            "resume_text_length": len(resume_text),
-            "resume_text": resume_text,
-            "job_description": job_description
+            "message": "Resume analyzed successfully",
+            "result": result
         })
 
     except Exception as e:
+
         return jsonify({
+            "status": "error",
             "error": str(e)
         }), 500
 
+    finally:
+
+        if os.path.exists(filepath):
+            os.remove(filepath)
+
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(
+        debug=True,
+        port=5000
+    )
